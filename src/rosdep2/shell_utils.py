@@ -42,13 +42,30 @@ if sys.hexversion > 0x03000000: #Python3
 else:
     python3 = False
 
-def read_stdout(cmd):
+def read_stdout_and_stderr(cmd):
+    '''
+    Execute a given command and return its standard output and standard error output.
+
+    :param cmd: command in a form that Popen understands (list of strings or one string)
+    :return: tuple of strings: stdout output and standard error output
+    '''
     p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     std_out, std_err = p.communicate()
     if python3:
-        return std_out.decode()
+        return std_out.decode(), std_err.decode()
     else:
-        return std_out    
+        return std_out, std_err
+
+
+def read_stdout(cmd):
+    '''
+    Execute given command and return only stdout.
+
+    See `read_stdout_and_stderr`.
+    '''
+    stdout, stderr = read_stdout_and_stderr(cmd)
+    return stdout
+
 
 def create_tempfile_from_string_and_execute(string_script, path=None, exec_fn=None):
     """
